@@ -1,15 +1,12 @@
 import random
-from IPython.display import clear_output
+import module as m
 
 # das Spielfeld ist ein 2 dimensionales Array.
-game_table = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+game_table = m.GameTable
 
-# Ein Platzhalter auf Index 0, damit mit der Spielstein von Spieler 1 auch den Index 1 hat und der Spielstein für Spieler 2 den Index 2 hat.
-game_pieces = ["Platzhalter", "o", "x"] 
 
 # Funktion die immer das aktuelle Spielfeld visuell ausgibt.
 def print_game_table():
-    clear_output()
     table_string = "|1|2|3|4|5|\n-----------\n"
     for i in game_table:
         for j in i:
@@ -21,7 +18,8 @@ def print_game_table():
                 table_string += "| "
         table_string += "|\n"
     print(table_string)
-    
+
+
 def start_game():
     # Zu Beginn des Spiels kann der Spielmodus ausgewählt werden.
     game_mode = int(input("Wähle einen Spielmodus 1 oder 2:\n 1 für PVP - Player Versus Player\n 2 für PVC - Player Versus Computer\n"))
@@ -40,7 +38,8 @@ def start_game():
         if is_game_over:
             break
         is_game_over = player_move(2, game_mode)
-        
+
+
 # Gibt den Boolean, der angibt ob das Spiel vorbei ist, von der Funktion find_and_exchange_lowest() mit zurück.
 def player_move(player, game_mode):
     
@@ -50,7 +49,7 @@ def player_move(player, game_mode):
         
     else:
         is_valid_input = False
-        while is_valid_input == False:
+        while not is_valid_input:
 
             # Mit einem try-catch wird der Fall, dass der Benutzer keinen Input eingibt, abgedeckt.
             try: 
@@ -63,7 +62,8 @@ def player_move(player, game_mode):
                 print("Deine Eingabe ist ungültig, versuche es nochmal!")
             
     return find_and_exchange_lowest(column - 1, player, game_mode)
-    
+
+
 # Gibt einen Boolean zurück der angibt ob das Spiel vorbei ist.
 def find_and_exchange_lowest(column, player, game_mode):
     
@@ -101,7 +101,8 @@ def find_and_exchange_lowest(column, player, game_mode):
             if not (game_mode == 2 and player == 2):
                 print("Spalte ist schon voll! Versuchs nochmal in einer freien Spalte.")
             player_move(player, game_mode)
-            
+
+
 # Überprüft ob das Spiel von einem Spieler gewonnen wurde, also ob 4 gleiche Spielsteine horizontal, vertikal oder diagonal nebeneinander sind.
 # Ausführliche Erklärung in der beigelegten Dokumentation.
 def is_game_won(row, column):
@@ -120,7 +121,7 @@ def is_game_won(row, column):
     
     # Vertikal
     game_table_column = []
-    for i in game_table:
+    for i in game_table.game_table:
         game_table_column.append(i[column])
     column_numbers = [j for j, x in enumerate(game_table_column) if x == player]
     if len(column_numbers) > 3:
@@ -200,4 +201,6 @@ def is_game_won(row, column):
     
     return is_game_won
 
-start_game()
+
+if __name__ == '__main__':
+    start_game()
