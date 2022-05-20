@@ -1,4 +1,4 @@
-import GamePiece as Gp
+from game_elements.game_piece import GamePiece
 
 
 class GameTable:
@@ -7,7 +7,7 @@ class GameTable:
         for row in range(0, scale):
             row_list = []
             for column in range(0, scale):
-                row_list.append(Gp.GamePiece(row, column))
+                row_list.append(GamePiece(row, column))
             self.game_table.append(row_list)
 
     # Funktion die immer das aktuelle Spielfeld visuell ausgibt.
