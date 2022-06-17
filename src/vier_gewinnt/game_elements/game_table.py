@@ -1,4 +1,7 @@
+import yaml
+
 from game_elements.game_piece import GamePiece
+from game_elements.player.type.ai import Ai
 
 
 class GameTable:
@@ -25,10 +28,9 @@ class GameTable:
         print(table_string)
 
     # Überprüft ob das Spiel von einem Spieler gewonnen wurde, also ob 4 gleiche Spielsteine horizontal,
-    # vertikal oder diagonal nebeneinander sind. Ausführliche Erklärung in der beigelegten Dokumentation.
+    # vertikal oder diagonal nebeneinander sind.
     def is_game_won(self, row, column):
-        player = self.game_table[row][column]
-        is_game_won = None
+        player = self.game_table[row][column].value
 
         # Horizontal
         row_numbers = [j for j, x in enumerate(self.game_table[row]) if x.value == player]
@@ -36,9 +38,9 @@ class GameTable:
             if row_numbers == list(range(min(row_numbers), max(row_numbers) + 1)):
                 return True
             else:
-                is_game_won = False
+                pass
         else:
-            is_game_won = False
+            pass
 
         # Vertikal
         game_table_column = []
@@ -49,9 +51,9 @@ class GameTable:
             if column_numbers == list(range(min(column_numbers), max(column_numbers) + 1)):
                 return True
             else:
-                is_game_won = False
+                pass
         else:
-            is_game_won = False
+            pass
 
         # Diagonal
         # links-unten nach rechts-oben
@@ -61,75 +63,73 @@ class GameTable:
             start_field_column = row + column - 4
             counter = start_field_row
             for a in range(0, 5 - start_field_column):
-                game_table_diagonal_bot.append(self.game_table[counter][a + start_field_column])
-                counter -= 1
-            diagonal_numbers = [j for j, x in enumerate(game_table_diagonal_bot) if x.value == player]
-            if len(diagonal_numbers) > 3:
-                if diagonal_numbers == list(range(min(diagonal_numbers), max(diagonal_numbers) + 1)):
-                    is_game_won = True
-                else:
-                    is_game_won = False
-            else:
-                is_game_won = False
-        else:
-            start_field_row = row + column
-            start_field_column = 0
-            counter = start_field_row
-            for a in range(0, start_field_row + 1):
-                game_table_diagonal_bot.append(self.game_table[counter][a])
+                game_table_diagonal_bot.append(self.game_table[counter][a + start_field_column].value)
                 counter -= 1
             diagonal_numbers = [j for j, x in enumerate(game_table_diagonal_bot) if x == player]
             if len(diagonal_numbers) > 3:
                 if diagonal_numbers == list(range(min(diagonal_numbers), max(diagonal_numbers) + 1)):
-                    is_game_won = True
+                    return True
                 else:
-                    is_game_won = False
+                    pass
             else:
-                is_game_won = False
+                pass
+        else:
+            start_field_row = row + column
+            counter = start_field_row
+            for a in range(0, start_field_row + 1):
+                game_table_diagonal_bot.append(self.game_table[counter][a].value)
+                counter -= 1
+            diagonal_numbers = [j for j, x in enumerate(game_table_diagonal_bot) if x == player]
+            if len(diagonal_numbers) > 3:
+                if diagonal_numbers == list(range(min(diagonal_numbers), max(diagonal_numbers) + 1)):
+                    return True
+                else:
+                    pass
+            else:
+                pass
 
         # links-oben nach rechts-unten
         game_table_diagonal_top = []
         if row < column:
-            start_field_row = 0
             start_field_column = column - row
             counter = 0
             for a in range(0, 5 - start_field_column):
-                game_table_diagonal_top.append(self.game_table[a][start_field_column + counter])
+                game_table_diagonal_top.append(self.game_table[a][start_field_column + counter].value)
                 counter += 1
             diagonal_numbers = [j for j, x in enumerate(game_table_diagonal_top) if x == player]
             if len(diagonal_numbers) > 3:
                 if diagonal_numbers == list(range(min(diagonal_numbers), max(diagonal_numbers) + 1)):
                     return True
                 else:
-                    is_game_won = False
+                    pass
             else:
-                is_game_won = False
+                pass
         else:
             start_field_row = row - column
-            start_field_column = 0
             counter = 0
             for a in range(0, 5 - start_field_row):
-                game_table_diagonal_top.append(self.game_table[a + start_field_row][counter])
+                game_table_diagonal_top.append(self.game_table[a + start_field_row][counter].value)
                 counter += 1
             diagonal_numbers = [j for j, x in enumerate(game_table_diagonal_top) if x == player]
             if len(diagonal_numbers) > 3:
                 if diagonal_numbers == list(range(min(diagonal_numbers), max(diagonal_numbers) + 1)):
                     return True
                 else:
-                    is_game_won = False
+                    pass
             else:
-                is_game_won = False
+                pass
 
-        return is_game_won
+        return False
 
+    # Checkt die oberste Reihe, wenn diese Voll ist, ist auch das gesamte Spielfeld voll.
     def is_game_table_full(self):
-        for row in self.game_table:
-            for game_piece in row:
-                if game_piece.value == 0:
-                    return False
+        for game_piece in self.game_table[0]:
+            if game_piece.value == 0:
+                return False
         return True
 
-    # Gibt einen Boolean zurück der angibt ob das Spiel vorbei ist.
+    # Es wird ein Spielstein an die niedrigstmögliche Stelle der ausgewählten Zeile(column) gesetzt.
+    # Anschließend wird ein Boolean zurückgegeben, der angibt ob das Spiel vorbei ist.
     def find_and_exchange_lowest(self, column, player, game_mode):
         # In der for-Schleife wird durch die fokussierte Spalte, die der Funktion durch column mitgegeben wurde,
         # durch iteriert. Dies geschieht Rückwärts von 4 bis 0, da die Spalte angefangen von unten nach freien Plätzen
@@ -138,19 +138,39 @@ class GameTable:
 
             # Der Wert des fokussierten Elements wird hier schon in einer Variable gespeichert, da er später eventuell
             # überschrieben wird.
-            element = self.game_table[row][column]
+            focused_game_piece = self.game_table[row][column].value
 
-            # Wenn das fokussierte Feld leer ist:
-            if element.value == 0:
+            # Wenn das fokussierte Feld leer ist, wird dort ein Spielstein gesetzt und gecheckt, ob das Spiel damit
+            # gewonnen wurde:
+            if focused_game_piece == 0:
                 self.game_table[row][column].value = player.num
                 self.print_game_table()
 
                 # Wenn das Spiel gewonnen wurde:
                 if self.is_game_won(row, column):
-                    if game_mode == 2 and player.num == 2:
+                    if isinstance(player, Ai):
                         print("Der Computer hat gewonnen!")
                     else:
-                        print("Spieler ", player.num, " hat gewonnen! Herzlichen Glückwunsch!")
+                        print(f"{player.name} hat gewonnen! Herzlichen Glückwunsch!")
+                        with open(r"records.yaml") as file:
+                            records = yaml.full_load(file)
+
+                        print(records)
+
+                        if player.name in list(records.keys()):
+                            if game_mode == 1:
+                                records[player.name][0] += 1
+                            else:
+                                records[player.name][1] += 1
+                        else:
+                            if game_mode == 1:
+                                records[player.name] = [1, 0]
+                            else:
+                                records[player.name] = [0, 1]
+
+                        with open(r"records.yaml", "w") as file:
+                            yaml.dump(records, file)
+
                     return True
 
                 # Wenn das gesamte Spielfeld voll ist:
@@ -161,7 +181,7 @@ class GameTable:
                     return False
 
             # Wenn das fokussierte Feld ganz oben und nicht leer ist, also die Spalte schon voll ist:
-            elif row == 0 and element.value != 0:
-                if not (game_mode == 2 and player.num == 2):
+            elif row == 0 and focused_game_piece != 0:
+                if not isinstance(player, Ai):
                     print("Spalte ist schon voll! Versuchs nochmal in einer freien Spalte.")
-                player.player_move(game_mode)
+                player.player_move()
