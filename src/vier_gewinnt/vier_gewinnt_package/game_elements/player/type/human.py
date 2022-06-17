@@ -1,4 +1,4 @@
-from game_elements.player.player import Player
+from vier_gewinnt_package.game_elements.player.player import Player
 
 
 class Human(Player):

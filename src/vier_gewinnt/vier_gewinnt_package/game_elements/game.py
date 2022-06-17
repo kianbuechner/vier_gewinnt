@@ -1,8 +1,8 @@
 import yaml
 
-from game_elements.game_table import GameTable
-from game_elements.player.type.ai import Ai
-from game_elements.player.type.human import Human
+from vier_gewinnt_package.game_elements.game_table import GameTable
+from vier_gewinnt_package.game_elements.player.type.ai import Ai
+from vier_gewinnt_package.game_elements.player.type.human import Human
 
 
 def print_leaderboard():

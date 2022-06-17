@@ -1,7 +1,7 @@
 import yaml
 
-from game_elements.game_piece import GamePiece
-from game_elements.player.type.ai import Ai
+from vier_gewinnt_package.game_elements.game_piece import GamePiece
+from vier_gewinnt_package.game_elements.player.type.ai import Ai
 
 
 class GameTable:
