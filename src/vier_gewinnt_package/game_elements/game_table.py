@@ -1,15 +1,15 @@
 import yaml
 
-from vier_gewinnt_package.game_elements.game_piece import GamePiece
-from vier_gewinnt_package.game_elements.player.type.ai import Ai
+from src.vier_gewinnt_package.game_elements.game_piece import GamePiece
+from src.vier_gewinnt_package.game_elements.player.type.ai import Ai
 
 
 class GameTable:
-    def __init__(self, scale):
+    def __init__(self):
         self.game_table = []
-        for row in range(0, scale):
+        for row in range(0, 5):
             row_list = []
-            for column in range(0, scale):
+            for column in range(0, 5):
                 row_list.append(GamePiece(row, column))
             self.game_table.append(row_list)
 
@@ -28,7 +28,7 @@ class GameTable:
         print(table_string)
 
     # Überprüft ob das Spiel von einem Spieler gewonnen wurde, also ob 4 gleiche Spielsteine horizontal,
-    # vertikal oder diagonal nebeneinander sind.
+    # vertikal oder diagonal nebeneinander liegen.
     def is_game_won(self, row, column):
         player = self.game_table[row][column].value
 
@@ -128,7 +128,7 @@ class GameTable:
                 return False
         return True
 
-    # Es wird ein Spielstein an die niedrigstmögliche Stelle der ausgewählten Zeile(column) gesetzt.
+    # Es wird ein Spielstein an die niedrigstmögliche Stelle der ausgewählten Spalte(column) gesetzt.
     # Anschließend wird ein Boolean zurückgegeben, der angibt ob das Spiel vorbei ist.
     def find_and_exchange_lowest(self, column, player, game_mode):
         # In der for-Schleife wird durch die fokussierte Spalte, die der Funktion durch column mitgegeben wurde,
@@ -151,11 +151,12 @@ class GameTable:
                     if isinstance(player, Ai):
                         print("Der Computer hat gewonnen!")
                     else:
+                        # Falls ein menschlicher Spieler gewonnen hat wird dieser Sieg, falls noch nicht in der
+                        # Bestenliste vertreten, in diese eingetragen. Ansonsten wird bei dem entsprechenden Spieler
+                        # ein Sieg an der entsprechenden Stelle addiert.
                         print(f"{player.name} hat gewonnen! Herzlichen Glückwunsch!")
                         with open(r"records.yaml") as file:
                             records = yaml.full_load(file)
-
-                        print(records)
 
                         if player.name in list(records.keys()):
                             if game_mode == 1:
