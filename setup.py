@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="vier_gewinnt_kianbuechner",
-    version="0.0.1",
+    version="1.0.1",
     author="Kian Büchner",
     author_email="kbuechner@stud.macromedia.de",
     description="Vier Gewinnt mit OOP verbessert",

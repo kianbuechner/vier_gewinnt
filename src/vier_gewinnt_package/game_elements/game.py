@@ -20,7 +20,7 @@ def print_leaderboard():
     vs_ai_string = "vs. Computer".ljust(10)
 
     leaderboard_string = f"\nBestenliste:\n{player_string} | {vs_human_string} | {vs_ai_string}\n" \
-                         f"-------------------------------------- \n "
+                         f"--------------------------------------\n"
 
     for key in list(sorted_records.keys()):
         player_string = key.ljust(10)
